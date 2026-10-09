@@ -82,6 +82,8 @@ Highest-value table in the store. These are all mistakes that have already cost 
 | `winget install` appears hung | Waiting on a UAC prompt | `profile/dev-machine-windows.md` |
 | Need to playtest Roblox multiplayer with an agent | MCP sees each Clients-and-Servers window as its own studio; Jovan starts the test | `stacks/roblox-luau.md` |
 | Studio MCP screenshot is black / scripted camera angle ignored | Window unfocused; MCP resets camera changes from `execute_luau` | `stacks/roblox-luau.md` |
+| Imported FBX is huge / facing the wrong way | Importer fits the 2048-stud limit; Blender +Y lands on Roblox +Z | `stacks/roblox-luau.md` (Blender) |
+| Whole scene black except Neon parts | `ClockTime` past sunset (and/or default `Sky` removed) | `stacks/roblox-luau.md` |
 | Blind-guessing a rotation/offset axis, each guess a code round-trip | Change the loop: live-tune in the engine console, bake the result | `patterns/debugging-playbook.md` |
 
 ## Projects

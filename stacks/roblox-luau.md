@@ -115,6 +115,13 @@ midway. With the MCP, Claude edits the **live place** directly: scripts, geometr
   this was a *real* bug, but fixing it did **not** fix the mining — the ClickDetector issue above was
   the actual cause. Two real bugs stacked. Don't assume the first fix was the whole story.)
 
+- **"Everything is black except Neon"** after a lighting change: `Lighting.ClockTime` past ~18 puts the
+  sun below the horizon, so only ambient lights the scene — and deleting the default `Sky` makes it
+  worse. Dusk mood: ClockTime ~16–17 with a warm `Atmosphere` and `ColorCorrection`, not a later clock.
+- **Lights that follow a moving part:** parent `PointLight`s to `Attachment`s on that part (the rising
+  lava carries 11 of them). Mind the part's rotation — a cylinder lying on its side has local +X as
+  world up.
+
 - **`ParticleEmitter` needs a `Texture` to render anything.** There is no usable engine default;
   betting on one gives you invisible particles and no error. Alternatives that need no asset:
   plain `Neon` Parts flying outward and fading, or the built-in **`Sparkles`** instance.
@@ -209,9 +216,21 @@ Set up 2026-10-09 for Clueless; **the art pipeline itself is not yet proven** �
 - **On Windows the installer crashes with `UnicodeEncodeError: 'charmap' codec can't encode character '\u2192'`**
   after doing its work — set `PYTHONIOENCODING=utf-8`.
 - Telemetry is opt-in and off by default; `get_addon_status` reports it.
-- Planned route into Roblox: export FBX → Studio *Import 3D*. Whether the Studio MCP can import a local
-  file itself is unverified. (The Studio MCP also exposes `generate_mesh` / `insert_asset` — Dig & Sell's
-  AI-generated rock mesh came from Studio's own generation.)
+- **Route into Roblox: FBX → Jovan clicks Studio *Import 3D*.** The Studio MCP can't import a local
+  file (its asset tools are marketplace/generation only), so batch every model before asking — one
+  interruption, not three. Model in Blender at **1 unit = 1 stud** and build geometry in Python
+  (`bmesh`) through the Blender MCP; `look` renders a check without leaving the conversation.
+- **"The imported mesh is enormous"** — the importer scales each model so its largest side fits the
+  **2048-stud MeshPart limit** (a 300-stud pillar came in ×6.83, a 570-stud crater ×3.59, a 94-stud
+  ledge ×21.8). Proportions survive, so record each object's Blender dimensions and set
+  `MeshPart.Size` back to them.
+- **"The model is facing the wrong way"** — exported with `axis_forward="-Z", axis_up="Y"`, Blender
+  **+Y landed on Roblox +Z**, not −Z. A 180° turn about Y fixed it. Verify orientation with a downward
+  raycast at a known landmark (rim height at the lobby notch) rather than by eye.
+- **`MeshPart.CollisionFidelity` can't be set from a script** (not even plugin-level `execute_luau`) —
+  only in the Properties panel. Default (convex decomposition) was fine for hex pillars; for a huge
+  concave crater ring, keep it visual-only (`CanCollide = false`) and leave simple invisible Parts as
+  the collision.
 
 ## Studio / Rojo workflow (Dig & Sell)
 
