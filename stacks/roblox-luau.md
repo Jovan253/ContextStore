@@ -91,6 +91,10 @@ midway. With the MCP, Claude edits the **live place** directly: scripts, geometr
   Studio window isn't focused/visible**.
 - **Results over ~50 KB aren't returned inline** — Claude Code saves them to a `tool-results/*.txt` file
   and returns the path. Handy for bulk exports: hand the file to a script instead of reading it.
+- **…but the Studio MCP silently truncates any result at 100,000 characters** (ends in `... (truncated)`).
+  A whole-place script export hit it at 25 scripts. Split bulk exports into parts that each carry the
+  expected total, and have the consumer refuse to write until every part is present. Size parts at
+  ~55–95k: under ~50k they come back inline and flood the context.
 - **`execute_luau` freezes Studio until the code yields.** `task.wait()` inside is fine — 50 s polling
   loops watching a round worked — but bulk instance creation must be chunked with yields.
 
