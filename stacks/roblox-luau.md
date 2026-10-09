@@ -73,6 +73,16 @@ midway. With the MCP, Claude edits the **live place** directly: scripts, geometr
   on the rail and jump again from there (peak root Y +17 above the floor). Use tall invisible walls
   with `CanQuery = false` so the camera and clicks ignore them, plus a server safety net that returns
   anyone who still falls.
+- **`user_keyboard_input` doesn't trigger `ProximityPrompt`s** — the prompt was shown (`PromptShown`
+  fired, 5 studs away) yet a synthetic E did nothing. Test the handler with
+  `prompt:InputHoldBegin()` / `InputHoldEnd()` from the Client datamodel, and have Jovan press the real
+  key once.
+- **You can't give a test player coins from `execute_luau`** — it's a separate VM, so `require`d
+  services have empty state and writing the `Coins` attribute alone doesn't touch the saved profile.
+  An `AdminUserIds` grant in Config (the Dig & Sell pattern) is the way.
+- **DataStores in Studio fail with `StudioAccessToApisNotAllowed`** until *Enable Studio Access to API
+  Services* is on. A load-failure-kicks rule would then kick you from every playtest — in Studio only,
+  fall back to an unsaved session profile with a warning (live servers still kick).
 - **`user_mouse_input` with an `instance_path` performs a real click on a GUI button** — it verified a
   Spectate button end-to-end, not just its handler.
 - **The MCP undoes camera changes made in `execute_luau`** (*"The execute_luau changed camera type.
