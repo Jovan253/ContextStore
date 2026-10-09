@@ -154,6 +154,17 @@ midway. With the MCP, Claude edits the **live place** directly: scripts, geometr
   lava carries 11 of them). Mind the part's rotation — a cylinder lying on its side has local +X as
   world up.
 
+- **"Texture/Decal shows nothing" with a Creator Store asset id** — a store *Decal* asset id is not the
+  *image* id the `Texture` property needs. The Studio MCP's `insert_asset` even sets `Texture` to the
+  decal id, which silently never loads. Resolve it: `InsertService:LoadAsset(decalId)` → the inserted
+  Decal's `Texture` is `rbxassetid://<imageId>` (5242578821 → 5242578813 in Word Lava).
+- **Textures render on a cylinder's flat end faces**, and a scrolling `OffsetStudsU/V` on a client
+  RenderStepped is a free "flowing lava/water" effect. Over a Neon part, give the Texture ~0.45
+  transparency or it hides the glow.
+- **Sound sources that never break:** client-bundled `rbxasset://sounds/...` files (e.g.
+  `electronicpingshort.wav`) and Roblox's licensed **ProSoundEffects / APM** catalog. Random uploads get
+  moderated away; the "verified creators" search filter did not exclude them.
+
 - **`ParticleEmitter` needs a `Texture` to render anything.** There is no usable engine default;
   betting on one gives you invisible particles and no error. Alternatives that need no asset:
   plain `Neon` Parts flying outward and fading, or the built-in **`Sparkles`** instance.
