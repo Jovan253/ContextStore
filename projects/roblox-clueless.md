@@ -45,7 +45,8 @@ DataStore economy, monetization (revive, hint, troll products, VIP, 2x coins).
   no latency, no hosting cost.
 - **GloVe quirks that matter for a game:** function words ("but", "so", "it") crowd the top of
   abstract secrets like *time*/*hand* — exclude stopwords from rankings; news-corpus senses leak in
-  (*ring* → trafficking, smuggling; *star* → celebrity before galaxy) — drop or curate those secrets.
+  (*ring* → trafficking, smuggling) — drop or curate those secrets. Examples here are only words that
+  were dropped from the pool: never name a live secret in this public store.
   The WordNet filter also means "the" isn't a valid guess at all.
 - **Log-scale height:** `1 − ln(rank)/ln(5001)` so far-off early guesses still visibly move you. With
   lava at 0.25 studs/s accelerating 0.0015/s², you need roughly rank ≤350 by 2:00, ≤30 by 3:00 and a
