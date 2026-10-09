@@ -1,6 +1,6 @@
 # Clueless: Lava Rising
 
-**Repo:** `Roblox-Clueless` (local, no remote yet) · **State as of:** 2026-10-09
+**Repo:** `RobloxClueless` on GitHub (private; local folder `Roblox-Clueless`) · **State as of:** 2026-10-09
 
 A Roblox take on the browser game **Clueless** (one secret word; every guess is ranked by how close its
 *meaning* is, rank 1 = solved). Each player stands on a pillar in a volcano crater; the pillar's height
@@ -21,7 +21,8 @@ The first project built **Studio-first through the Roblox Studio MCP** (no Rojo)
   Dig & Sell)
 - Round/player status replicates via attributes (`ReplicatedStorage.RoundInfo`, Player attributes);
   remotes only for guesses (private, back to the guesser), notices and the recap
-- `tools/wordgen/build_words.py` — offline word-similarity pipeline (below)
+- `tools/wordgen/build_words.py` — offline word-similarity pipeline (below). The answer files
+  (`secrets.txt`, `synonyms.txt`, `out/`) are gitignored and kept off GitHub by Jovan's choice
 - Blender + Blender MCP set up for the art; not used yet
 
 ## Its own docs

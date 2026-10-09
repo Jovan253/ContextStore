@@ -8,7 +8,7 @@ Everything in here was extracted from real work: the `DECISIONS.md` / `RUNBOOK.m
 [KubePlayground](https://github.com/Jovan253/KubePlayground),
 [Music-Tool](https://github.com/Jovan253/Music-Tool),
 [RobloxAppDigSell](https://github.com/Jovan253/RobloxAppDigSell),
-Roblox-Clueless (local repo, not yet published),
+RobloxClueless (private),
 [Mythos](https://github.com/Jovan253/Mythos),
 [portfolio](https://github.com/Jovan253/portfolio) and
 [sudoku-solver](https://github.com/Jovan253/sudoku-solver).
