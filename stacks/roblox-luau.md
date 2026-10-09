@@ -91,6 +91,9 @@ midway. With the MCP, Claude edits the **live place** directly: scripts, geometr
 - **Size a "last N seconds" finale by the lowest player, not the highest.** Lava sped up so the *top*
   surviving pillar would be reached at 0:20; a player at mid height lasted **3.7 s** of a banner that
   said *"Solve it or burn 0:20"*. If the UI promises everyone a window, the hazard has to honour it.
+  Fix that held up: a two-leg schedule — ease the hazard up to the **lowest** active player over a
+  fixed grace (10 s), then sweep to the top by the deadline. Retested: the lowest player went at
+  exactly **10.0 s**, and anyone who improves mid-finale buys themselves more time.
 - **Anything a client must not know lives in ServerStorage**, and per-player secrets (e.g. a player's
   own guesses) go back only to that player via `FireClient`; everything shared rides replicated
   attributes, which need no remote plumbing.
