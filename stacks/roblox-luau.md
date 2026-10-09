@@ -64,6 +64,15 @@ midway. With the MCP, Claude edits the **live place** directly: scripts, geometr
   (`Player1`/`Player2`) identifies each client. One agent then drives every window in sequence —
   guesses fired per client, server polled for state, screenshots per player. No need for one subagent
   per player; they'd share the same MCP connection anyway.
+- **Testing "can players escape this area?" through the MCP:** `user_keyboard_input` W moves relative
+  to the *camera*, so a held W + Space test was inconclusive. Reliable version, from the **Client**
+  datamodel: loop `humanoid:Move(direction)` + `humanoid.Jump = true` for a few seconds and record the
+  max position reached. (`character_navigation` answering *"Can not find a route to the destination"*
+  is a quick first signal, but it's pathfinding, not physics.) And remember the obvious one it
+  caught: **a 5-stud railing doesn't contain anyone — a default jump clears ~7**, and players can stand
+  on the rail and jump again from there (peak root Y +17 above the floor). Use tall invisible walls
+  with `CanQuery = false` so the camera and clicks ignore them, plus a server safety net that returns
+  anyone who still falls.
 - **`user_mouse_input` with an `instance_path` performs a real click on a GUI button** — it verified a
   Spectate button end-to-end, not just its handler.
 - **The MCP undoes camera changes made in `execute_luau`** (*"The execute_luau changed camera type.
