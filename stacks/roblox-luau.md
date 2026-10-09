@@ -105,6 +105,15 @@ midway. With the MCP, Claude edits the **live place** directly: scripts, geometr
 - **Never edit `studio-mirror/` expecting it to sync back** — it is an export, not a source.
 - **Keep geometry static, scripts behaviour-only.** Scripts move pre-placed parts (pillars, lava); they
   never rebuild the map.
+- **"Shielded player walked off their platform, died, and stayed in the round."** Two bugs stacked:
+  (1) swapping a square greybox cap for a **hex mesh** left the square invisible cage with four
+  floorless corner triangles — players slid down beside the column; (2) the shield/invulnerability
+  window skipped **every** elimination check, so the death went unseen and the respawned character
+  sat in the lobby still marked alive. Rules that fixed it: a containment cage must match the floor's
+  actual shape (raycast the corners after any mesh swap); a shield only exempts the hazard it's
+  for, never "died" or "left your platform"; give mid-respawn moves (revive) their own flag instead.
+- **Creators automatically own their own game passes** — every pass perk is always on for the owner's
+  account, so test "not owned" paths on an alt or a Clients-and-Servers test player.
 - **Hazards are server-authoritative.** Compare positions every `Heartbeat` (lava Y vs. platform top /
   root Y) instead of `Touched` — deterministic and testable: the idle player was eliminated at
   **36.0 s**, exactly when the lava crossed the platform's starting height.
