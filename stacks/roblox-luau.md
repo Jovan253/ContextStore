@@ -1,10 +1,81 @@
 # Roblox and Luau
 
 From **Dig & Sell** (repo `RobloxAppDigSell`) — a Rojo-synced Luau simulator, built and published
-live in Sep 2026. Nearly every item here was found by playtesting, not by reading docs.
+live in Sep 2026 — and **Clueless: Lava Rising** (repo `Roblox-Clueless`), built Studio-first through
+the Roblox Studio MCP from Oct 2026. Nearly every item here was found by playtesting, not by reading
+docs.
 
-Setup: Rojo (`default.project.json`, `aftman.toml`), Studio for level geometry, server
-services + `*.client.luau` controllers.
+**For a new Roblox project, use the Studio-first MCP setup below** — Jovan's call after both projects
+(2026-10-09): *"it is proven to be more efficient"*. Dig & Sell's Rojo + code-built-geometry setup is
+still described further down because that repo still uses it.
+
+---
+
+## Recommended setup: Studio-first through the Roblox Studio MCP
+
+**Why:** Dig & Sell started on Rojo with geometry rebuilt by scripts on every server start. That
+fought live Studio design work (a procedural rebuild wipes whatever was placed in the editor, and a
+leftover Edit-mode folder silently kept the old map) and the project had to migrate to a static map
+midway. With the MCP, Claude edits the **live place** directly: scripts, geometry, UI, playtests.
+
+**Setup (Windows, ~10 min — split into what Claude runs vs. what Jovan clicks):**
+
+1. Studio ships the MCP server itself: `%LOCALAPPDATA%\Roblox\mcp.bat` → `StudioMCP.exe`. Register it
+   per project (Claude): `claude mcp add Roblox_Studio -- cmd.exe /c "cd /d %LOCALAPPDATA%\Roblox && .\mcp.bat"`.
+   From Git Bash this needs `MSYS_NO_PATHCONV=1` — see `profile/dev-machine-windows.md`.
+2. Jovan: open/create the place in Studio and make sure Studio's MCP server is switched on; restart
+   Claude Code; `/mcp` shows `Roblox_Studio` connected.
+3. Every tool call takes a `studio_id` from `list_roblox_studios` — several Studios can be open at
+   once, so pick by place name.
+
+**Workflow that worked:**
+
+- **The place file is the only live copy of the code.** The repo holds docs, offline tools, and a
+  **read-only `studio-mirror/`** of every script's `Source`, refreshed at each milestone: an
+  `execute_luau` snippet returns all sources as one JSON blob, and a small script pulls the newest blob
+  out of the Claude Code session transcript (`.jsonl`) and rewrites the mirror — no re-typing code
+  through the model. Implementation: `tools/sync_mirror.py` in the Clueless repo.
+- **Remind Jovan to save/publish every session.** Nothing the MCP does is on disk until he does.
+- `multi_edit` with a `className` creates a new script **and any missing parent folders**
+  (`ServerScriptService.Services.X` made the `Services` folder).
+- Wrap Edit-mode world building in `ChangeHistoryService:TryBeginRecording` / `FinishRecording` so a
+  whole build is one undo step for him.
+- **Large generated data ships as an `.rbxmx` file** — plain XML, trivial to emit from Python
+  (`Folder` → `ModuleScript` items with a `ProtectedString name="Source"`). Jovan right-clicks
+  ServerStorage → *Insert from File*. 8.4 MB (a 20k-word list plus 185 modules of 5,000 lines each)
+  inserted and `require`d without trouble. Put anything clients must not see in **ServerStorage**.
+- **Drive playtests entirely through the MCP:** `start_stop_play`, then fire `RemoteEvent`s from the
+  **Client** datamodel (`require(Remotes)` + `FireServer`) to simulate input, and poll state from the
+  **Server** datamodel. A full round loop (guess → rise → solve → recap; idle → eliminated → respawn)
+  was verified this way without touching the keyboard.
+- `screen_capture` with `camera_position`/`look_at_position` frames shots in Edit mode; with no camera
+  args during play it captures the player's own view — the cheap way to check HUD layout.
+
+### MCP gotchas
+
+- **"Module state reads `nil` when inspected through the MCP, but the game is clearly using it."**
+  `execute_luau` runs in its own Lua VM, so `require(module)` returns a **fresh instance**, not the
+  running game's. Inspect live state through replicated attributes / instances instead, or derive it.
+  (The round's secret word was recovered by matching three observed guess ranks against the word data.)
+- **`execute_luau` freezes Studio until the code yields.** `task.wait()` inside is fine — 50 s polling
+  loops watching a round worked — but bulk instance creation must be chunked with yields.
+
+## Things to be wary of (Studio-first)
+
+- **No git safety net for the place.** Revert = Studio undo or Roblox version history. Mirror often;
+  commit the mirror; save/publish.
+- **Never edit `studio-mirror/` expecting it to sync back** — it is an export, not a source.
+- **Keep geometry static, scripts behaviour-only.** Scripts move pre-placed parts (pillars, lava); they
+  never rebuild the map.
+- **Hazards are server-authoritative.** Compare positions every `Heartbeat` (lava Y vs. platform top /
+  root Y) instead of `Touched` — deterministic and testable: the idle player was eliminated at
+  **36.0 s**, exactly when the lava crossed the platform's starting height.
+- **The repo itself can leak answers.** Clueless's `secrets.txt` and ranking preview are every
+  answer in the game; ServerStorage protects them from clients, a public GitHub repo would not.
+  Keep game repos with answer/loot-table data private.
+- **Anything a client must not know lives in ServerStorage**, and per-player secrets (e.g. a player's
+  own guesses) go back only to that player via `FireClient`; everything shared rides replicated
+  attributes, which need no remote plumbing.
 
 ---
 
@@ -33,7 +104,16 @@ services + `*.client.luau` controllers.
   (e.g. by name), and leave layout instances alone.
 
 - **Anchored parts moved via `CFrame` carry a standing player automatically** — same as any Roblox
-  moving platform, no extra work.
+  moving platform, no extra work. Confirmed again with a `PivotTo` every `Heartbeat` at up to
+  **40 studs/s** upward: the character rode it, staying ~2.5 studs above the cap.
+
+- **"A teleported character slides sideways off its platform within ~0.3 s and falls"** — or more
+  generally, **a model lands in the wrong place after `PivotTo`**. Setting `Model.WorldPivot` does
+  not stick once the model has a `PrimaryPart`: the pivot becomes `PrimaryPart.CFrame *
+  PrimaryPart.PivotOffset`. A pillar's pivot stayed at the centre of its 300-stud column, so
+  `PivotTo(y = 10)` put the cap 150 studs up — and the character teleported to "pivot + 4" landed
+  *inside* the column, where physics depenetration shoved it out sideways. **Fix:** set `PrimaryPart`,
+  then set `PrimaryPart.PivotOffset` (e.g. to the cap's top face), and assert `GetPivot()` right after.
 
 - **The default PlayerList overlay can hide custom UI buttons.** Disable it if a button "isn't
   appearing".
@@ -93,7 +173,26 @@ of anything.
 Related: **a static checkpoint tied to a now-moving platform drifts out of alignment.** Size it to
 cover the platform's full swing range and anchor it at the swing's centre.
 
-## Studio / Rojo workflow
+## Blender → Studio (Blender MCP)
+
+Set up 2026-10-09 for Clueless; **the art pipeline itself is not yet proven** — update this when it is.
+
+- **The package was renamed `blender-mcp` → `mcp-for-blender`.** The old PyPI name still resolves but
+  is stale (2.0.0 vs. 2.1.9 in the repo). Register: `claude mcp add blender -- cmd.exe /c uvx mcp-for-blender`.
+- **`uvx mcp-for-blender install-addon` says "No Blender addons directories found"** on a fresh
+  install: Blender's user config doesn't exist until Blender has run once. Create it headless:
+  `blender -b --python-expr "import bpy; bpy.ops.wm.save_userpref()"` — then install, and enable
+  headless too: `addon_utils.enable('blender_mcp', default_set=True, persistent=True)` +
+  `save_userpref()`. The add-on starts its socket server (localhost:9876) when Blender opens, so
+  Jovan only has to launch Blender.
+- **On Windows the installer crashes with `UnicodeEncodeError: 'charmap' codec can't encode character '\u2192'`**
+  after doing its work — set `PYTHONIOENCODING=utf-8`.
+- Telemetry is opt-in and off by default; `get_addon_status` reports it.
+- Planned route into Roblox: export FBX → Studio *Import 3D*. Whether the Studio MCP can import a local
+  file itself is unverified. (The Studio MCP also exposes `generate_mesh` / `insert_asset` — Dig & Sell's
+  AI-generated rock mesh came from Studio's own generation.)
+
+## Studio / Rojo workflow (Dig & Sell)
 
 - **Guard world-building against leftovers.** The service only builds its zones folder if that
   folder doesn't already exist in Workspace — so a leftover folder in Studio's **Edit-mode**
@@ -142,4 +241,5 @@ cover the platform's full swing range and anchor it at the swing's centre.
 ## Related
 
 - `patterns/staged-build-and-playtest.md` — the build/playtest rhythm this project ran on
-- `projects/roblox-dig-and-sell.md`
+- `projects/roblox-dig-and-sell.md` · `projects/roblox-clueless.md`
+- `profile/dev-machine-windows.md` — Git Bash path-mangling when registering MCP servers

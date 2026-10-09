@@ -3,7 +3,7 @@
 **Verify before relying on any version number here.** Versions drift; the *quirks* are the durable
 part of this file.
 
-Last checked: **2026-10-03**.
+Last checked: **2026-10-03**; Roblox/Blender tooling and the Git Bash notes added **2026-10-09**.
 
 ---
 
@@ -26,7 +26,11 @@ Treat as a range, not a fact — they differ per project and over time.
 | Runtime | Seen |
 |---|---|
 | Node | 20.11.0 → 20.18.0 (TrackSplit, at different dates) |
-| Python | 3.11.8 on PATH; 3.12 targeted by some projects |
+| Python | 3.11.8 on PATH (2026-10-03); `python` resolved to **3.12.0** on 2026-10-09 — several installs (3.8/3.11/3.12) are on PATH, order decides |
+| uv | 0.8.3 (`~/.local/bin`) — `uv run` with PEP 723 inline deps works well for one-off tools |
+| Rojo / Aftman | Rojo 7.7.0, Aftman 0.3.0 (Dig & Sell) |
+| Roblox Studio MCP | ships with Studio: `%LOCALAPPDATA%\Roblox\mcp.bat` → `StudioMCP.exe` |
+| Blender | 5.2.2 LTS via `winget install BlenderFoundation.Blender` (2026-10-09) |
 | Docker | 29.7.2 |
 | Kubernetes (local) | v1.36.1 via Docker Desktop |
 | helm | v4.2.4 |
@@ -82,6 +86,17 @@ The recurring ones, all of which have cost real time:
   `pydub` fails at runtime without it, with a confusing warning.
 - **Virtualenv executables are invoked by path** in his runbooks, e.g. `.venv\Scripts\modal.exe deploy`
   rather than relying on activation.
+
+- **Claude Code's Bash tool is Git Bash (MSYS), and MSYS rewrites `/c`-style arguments into paths.**
+  `claude mcp add X -- cmd.exe /c ...` registered `cmd.exe C:/ ...`, and the server then failed with
+  *"MCP server … connection timed out after 30000ms"*. Prefix `MSYS_NO_PATHCONV=1`, or register from
+  PowerShell. (`claude mcp add-json` from Git Bash also failed, with *"Invalid configuration: : Invalid input"*.)
+- **The `claude` CLI isn't on Git Bash's PATH** — it's an npm shim at
+  `C:\Users\Jovan\AppData\Roaming\npm\claude` (PowerShell finds `claude.ps1` fine).
+- **`winget install` of an MSI can look hung** — it's waiting on a UAC prompt Jovan has to click
+  (*"The installer will request to run as administrator. Expect a prompt."*). Tell him rather than wait.
+- **Python CLIs that print non-ASCII (`→`) crash on the cp1252 console** with `UnicodeEncodeError`.
+  Set `PYTHONIOENCODING=utf-8`.
 
 ## Multi-context safety habit
 

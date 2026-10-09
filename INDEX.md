@@ -24,13 +24,14 @@ Example: `https://raw.githubusercontent.com/Jovan253/ContextStore/main/stacks/ku
 | React, Vite, TypeScript, StrictMode, Vercel | `stacks/react-vite-typescript.md` |
 | Postgres, SQLAlchemy, Alembic | `stacks/postgres-and-data.md` |
 | Free-tier / serverless hosting (Modal, Supabase, Neon, R2, Railway, Vercel) | `stacks/free-tier-hosting.md` |
-| Roblox, Luau, Rojo, Studio | `stacks/roblox-luau.md` |
+| Roblox, Luau, Studio MCP, Rojo, Blender → Studio | `stacks/roblox-luau.md` |
 
 ## By situation
 
 | Situation | Fetch |
 |---|---|
 | Starting a new project — what docs to create | `patterns/project-documentation.md` |
+| Starting a new Roblox game — tooling setup and workflow | `stacks/roblox-luau.md` (Recommended setup) |
 | Stuck on an opaque error; about to guess | `patterns/debugging-playbook.md` |
 | Building a feature in rounds with human feedback | `patterns/staged-build-and-playtest.md` |
 | Deciding whether something is worth building / shipping publicly | `patterns/portfolio-project-criteria.md` |
@@ -74,6 +75,11 @@ Highest-value table in the store. These are all mistakes that have already cost 
 | UI list items all stack at (0,0), nothing scrolls | `ClearAllChildren` destroyed the `UIListLayout` too — it's a child | `stacks/roblox-luau.md` |
 | A timed reveal animation spoils itself early | PlayerData replicates on grant, well before the animation finishes | `stacks/roblox-luau.md` |
 | Player progress silently reset | DataStore load failure treated as "new player", then saved over | `stacks/roblox-luau.md` |
+| Teleported character slides off its platform and falls; model lands offset after `PivotTo` | `WorldPivot` is ignored once a `PrimaryPart` is set — use `PrimaryPart.PivotOffset` | `stacks/roblox-luau.md` |
+| Module state is `nil`/fresh when inspected via Studio MCP `execute_luau` | It runs in its own VM; `require` returns a new module instance | `stacks/roblox-luau.md` |
+| `claude mcp add` server times out (30000ms); registered args show `C:/` instead of `/c` | Git Bash (MSYS) path conversion — `MSYS_NO_PATHCONV=1` | `profile/dev-machine-windows.md` |
+| Blender MCP add-on install: "No Blender addons directories found" / `UnicodeEncodeError` | Blender never launched yet; cp1252 console | `stacks/roblox-luau.md` (Blender) |
+| `winget install` appears hung | Waiting on a UAC prompt | `profile/dev-machine-windows.md` |
 | Blind-guessing a rotation/offset axis, each guess a code round-trip | Change the loop: live-tune in the engine console, bake the result | `patterns/debugging-playbook.md` |
 
 ## Projects
@@ -85,6 +91,7 @@ Per-repo pages: what it is, its stack, where its own docs live, and what state i
 | KubePlayground — live cluster visualiser, KCNA vehicle | `projects/kubeplayground.md` |
 | TrackSplit (repo `Music-Tool`) — GPU stem separation | `projects/tracksplit-music-tool.md` |
 | Dig & Sell (repo `RobloxAppDigSell`) — published Roblox simulator | `projects/roblox-dig-and-sell.md` |
+| Clueless: Lava Rising (repo `Roblox-Clueless`) — semantic word-guessing Roblox game, Studio-first via MCP | `projects/roblox-clueless.md` |
 | Mythos — mythology knowledge graph | `projects/mythos.md` |
 | portfolio — personal site | `projects/portfolio.md` |
 | sudoku-solver — visual solver | `projects/sudoku-solver.md` |
