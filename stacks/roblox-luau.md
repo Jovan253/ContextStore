@@ -226,6 +226,10 @@ cover the platform's full swing range and anchor it at the swing's centre.
 
 ## Blender → Studio (Blender MCP)
 
+**Scope:** Blender is for 3D assets that go *into* the game. Store thumbnails, product/pass icons and
+other 2D art are made in Claude Design (see `profile/working-agreement.md`). Pass icons are shown
+as a **circle** on Roblox, so keep the art inside it.
+
 Set up 2026-10-09 for Clueless; **the art pipeline itself is not yet proven** — update this when it is.
 
 - **The package was renamed `blender-mcp` → `mcp-for-blender`.** The old PyPI name still resolves but

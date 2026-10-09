@@ -88,6 +88,11 @@ Worth knowing, because each is a correction he had to make:
 - **Presenting options instead of deciding.** See Autonomy.
 - **Mixing conceptually separate things into one UI** because it was convenient to implement.
 - **Trailing summary paragraphs.**
+- **2D art made in Blender.** A Cycles-rendered game thumbnail with a scripted text overlay got
+  *"that thumbnail is awful just use Claude Design to create it"* (2026-10-09). Thumbnails, icons,
+  store/marketing graphics and mockups go on a **Claude Design** canvas (Artifact tool → `quickstart`,
+  intent `design`), with the canvas sources copied into the repo. Blender is for 3D game assets only.
+  He'd suggested Claude Design mid-task, so switch as soon as he suggests it, not after finishing.
 
 ## Related
 
