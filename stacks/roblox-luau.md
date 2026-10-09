@@ -57,6 +57,21 @@ midway. With the MCP, Claude edits the **live place** directly: scripts, geometr
   `execute_luau` runs in its own Lua VM, so `require(module)` returns a **fresh instance**, not the
   running game's. Inspect live state through replicated attributes / instances instead, or derive it.
   (The round's secret word was recovered by matching three observed guess ranks against the word data.)
+- **Multiplayer tests work through the MCP — once Jovan clicks *Test → Clients and Servers*.** No MCP
+  tool can start that test (`start_stop_play` is solo only), but every window it opens appears in
+  `list_roblox_studios` as its own `studio_id` with `name: null`; `get_studio_state` tells them apart
+  (*"Focused DataModel in the viewport: Server"* vs `Client`), and `Players.LocalPlayer.Name`
+  (`Player1`/`Player2`) identifies each client. One agent then drives every window in sequence —
+  guesses fired per client, server polled for state, screenshots per player. No need for one subagent
+  per player; they'd share the same MCP connection anyway.
+- **`user_mouse_input` with an `instance_path` performs a real click on a GUI button** — it verified a
+  Spectate button end-to-end, not just its handler.
+- **The MCP undoes camera changes made in `execute_luau`** (*"The execute_luau changed camera type.
+  Resetting from Enum.CameraType.Scriptable back to Enum.CameraType.Custom"*), so you can't script a
+  camera angle for a screenshot that way. Screenshots of a play session also come back **black when the
+  Studio window isn't focused/visible**.
+- **Results over ~50 KB aren't returned inline** — Claude Code saves them to a `tool-results/*.txt` file
+  and returns the path. Handy for bulk exports: hand the file to a script instead of reading it.
 - **`execute_luau` freezes Studio until the code yields.** `task.wait()` inside is fine — 50 s polling
   loops watching a round worked — but bulk instance creation must be chunked with yields.
 
@@ -73,6 +88,9 @@ midway. With the MCP, Claude edits the **live place** directly: scripts, geometr
 - **The repo itself can leak answers.** Clueless's `secrets.txt` and ranking preview are every
   answer in the game; ServerStorage protects them from clients, a public GitHub repo would not.
   Keep game repos with answer/loot-table data private.
+- **Size a "last N seconds" finale by the lowest player, not the highest.** Lava sped up so the *top*
+  surviving pillar would be reached at 0:20; a player at mid height lasted **3.7 s** of a banner that
+  said *"Solve it or burn 0:20"*. If the UI promises everyone a window, the hazard has to honour it.
 - **Anything a client must not know lives in ServerStorage**, and per-player secrets (e.g. a player's
   own guesses) go back only to that player via `FireClient`; everything shared rides replicated
   attributes, which need no remote plumbing.

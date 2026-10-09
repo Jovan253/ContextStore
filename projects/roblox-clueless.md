@@ -32,9 +32,10 @@ The first project built **Studio-first through the Roblox Studio MCP** (no Rojo)
 
 ## What's built (2026-10-09)
 
-Milestones 0–2: tooling, word pipeline, greybox crater/pillars/lobby, the full solo round loop and
-HUD — all verified by MCP-driven playtests. Next: multiplayer + lobby spectating, Blender art,
-DataStore economy, monetization (revive, hint, troll products, VIP, 2x coins).
+Milestones 0–3: tooling, word pipeline, greybox crater/pillars/lobby, the full round loop, HUD, lobby
+scoreboard, spectate camera, filtered recap — verified by MCP-driven playtests, including a
+2-player Clients-and-Servers session. Next: Blender art, DataStore economy, monetization (revive,
+hint, troll products, VIP, 2x coins).
 
 ## Lessons it contributed
 

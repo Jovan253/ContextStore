@@ -80,6 +80,8 @@ Highest-value table in the store. These are all mistakes that have already cost 
 | `claude mcp add` server times out (30000ms); registered args show `C:/` instead of `/c` | Git Bash (MSYS) path conversion — `MSYS_NO_PATHCONV=1` | `profile/dev-machine-windows.md` |
 | Blender MCP add-on install: "No Blender addons directories found" / `UnicodeEncodeError` | Blender never launched yet; cp1252 console | `stacks/roblox-luau.md` (Blender) |
 | `winget install` appears hung | Waiting on a UAC prompt | `profile/dev-machine-windows.md` |
+| Need to playtest Roblox multiplayer with an agent | MCP sees each Clients-and-Servers window as its own studio; Jovan starts the test | `stacks/roblox-luau.md` |
+| Studio MCP screenshot is black / scripted camera angle ignored | Window unfocused; MCP resets camera changes from `execute_luau` | `stacks/roblox-luau.md` |
 | Blind-guessing a rotation/offset axis, each guess a code round-trip | Change the loop: live-tune in the engine console, bake the result | `patterns/debugging-playbook.md` |
 
 ## Projects
